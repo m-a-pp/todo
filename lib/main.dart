@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:todo/app_theme.dart';
 
+
+import 'app_theme.dart';
 import 'S.dart';
+import 'pages/home_page.dart';
 void main() {
   runApp(const ToDoApp());
 }
@@ -11,31 +15,19 @@ class ToDoApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      localizationsDelegates: [
+    var _isDark = false;
+    return MaterialApp(
+      localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: L10n.supportedLocales,
+      supportedLocales: S.supportedLocales,
+      theme: AppTheme.theme(_isDark),
       home: HomePage(),
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return  Scaffold(
-      body: Center(child: Text(L10n.of(context).name),),
-    );
-  }
-}

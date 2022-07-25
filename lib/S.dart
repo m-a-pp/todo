@@ -3,7 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 export 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class L10n {
+class S {
   static const en = Locale('en');
   static const ru = Locale('ru');
 
@@ -15,5 +15,5 @@ class L10n {
   static AppLocalizations of(BuildContext context) =>
       AppLocalizations.of(context)!;
 
-  const L10n._();
+  const S._();
 }
