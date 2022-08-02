@@ -13,6 +13,11 @@ class AppTheme {
                   height: 32 / 38,
                   fontWeight: FontWeight.w500,
                   fontSize: 32),
+              headline3: TextStyle(
+                  color: Color(0xFF000000),
+                  height: 32 / 38,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 20),
               headline2: TextStyle(
                   color: Color(0x4D000000),
                   height: 20 / 32,

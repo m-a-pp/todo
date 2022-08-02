@@ -18,37 +18,59 @@ class Delegate extends SliverPersistentHeaderDelegate {
   @override
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
+    final progress = shrinkOffset / maxExtent;
     ThemeData theme = Theme.of(context);
     AppLocalizations localizations = Localization.of(context);
-    return Container(
+    return Card(
       color: theme.primaryColor,
-      height: 125,
+      elevation: progress * 4,
       child: Stack(
         children: [
-          Positioned(
-            left: 60,
-            top: 50,
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 100),
+            padding: EdgeInsets.lerp(
+              EdgeInsets.fromLTRB(60, 50, 0, 0),
+              EdgeInsets.fromLTRB(16, 0, 0, 0),
+              progress,
+            ),
+            alignment: Alignment.lerp(
+              Alignment.topLeft,
+              Alignment.centerLeft,
+              progress,
+            ),
             child: Text(
               localizations.my_tasks,
-              style: theme.textTheme.headline1,
+              style: TextStyle.lerp(theme.textTheme.headline1,
+                  theme.textTheme.headline3, progress),
             ),
           ),
-          Positioned(
-            top: 70,
-            right: 25,
-            child: IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.visibility,
-                  color: theme.secondaryHeaderColor,
-                )),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 100),
+            padding: EdgeInsets.lerp(
+              EdgeInsets.fromLTRB(0, 0, 20, 16),
+              EdgeInsets.fromLTRB(0, 0, 20, 0),
+              progress,
+            ),
+            alignment: Alignment.lerp(
+              Alignment.bottomRight,
+              Alignment.centerRight,
+              progress,
+            ),
+            child: Icon(
+              Icons.visibility,
+              color: theme.secondaryHeaderColor,
+            ),
           ),
           Positioned(
             top: 90,
             left: 60,
-            child: Text(
-              localizations.done,
-              style: theme.textTheme.headline2,
+            child: AnimatedOpacity(
+              duration: const Duration(milliseconds: 150),
+              opacity: 1 - progress,
+              child: Text(
+                localizations.done,
+                style: theme.textTheme.headline2,
+              ),
             ),
           ),
         ],
@@ -60,7 +82,7 @@ class Delegate extends SliverPersistentHeaderDelegate {
   double get maxExtent => 125;
 
   @override
-  double get minExtent => 60;
+  double get minExtent => 80;
 
   @override
   bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
