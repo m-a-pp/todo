@@ -1,0 +1,14 @@
+{
+  "name": "Максим Эпп",
+  "my_tasks": "Мои дела",
+  "done": "Выполнено - ",
+  "new_task": "Новое",
+  "save": "СОХРАНИТЬ",
+  "what_todo": "Что надо сделать...",
+  "importance": "Важность",
+  "no_priority": "Нет",
+  "high_priority": "Высокий",
+  "low_priority": "Низкий",
+  "finish_up_to": "Сделать до",
+  "delete": "Удалить"
+}

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:todo/app_theme.dart';
+import 'package:todo/src/app_theme.dart';
 
 
-import 'app_theme.dart';
-import 'S.dart';
-import 'pages/home_page.dart';
+import 'src/app_theme.dart';
+import 'src/localization.dart';
+import 'src/pages/home_page.dart';
+import 'src/pages/todo_page.dart';
+
 void main() {
   runApp(const ToDoApp());
 }
@@ -23,9 +25,10 @@ class ToDoApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: S.supportedLocales,
+      supportedLocales: Localization.supportedLocales,
       theme: AppTheme.theme(_isDark),
       home: HomePage(),
+      //home: ToDoPage(),
     );
   }
 }

@@ -1,0 +1,14 @@
+{
+  "name": "Max Epp",
+  "my_tasks": "My tasks",
+  "done": "Done - ",
+  "new_task": "New",
+  "save": "SAVE",
+  "what_todo": "What need to do...",
+  "importance": "Priority",
+  "no_priority": "No",
+  "high_priority": "High",
+  "low_priority": "Low",
+  "finish_up_to": "Finish up to",
+  "delete": "Delete"
+}
