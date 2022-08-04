@@ -6,9 +6,10 @@
   "save": "SAVE",
   "what_todo": "What need to do...",
   "importance": "Priority",
-  "no_priority": "No",
-  "high_priority": "High",
-  "low_priority": "Low",
+  "basic": "Basic",
+  "important": "Important",
+  "low": "Low",
   "finish_up_to": "Finish up to",
-  "delete": "Delete"
+  "delete": "Delete",
+  "cur_locale": "en"
 }

@@ -6,9 +6,10 @@
   "save": "СОХРАНИТЬ",
   "what_todo": "Что надо сделать...",
   "importance": "Важность",
-  "no_priority": "Нет",
-  "high_priority": "Высокий",
-  "low_priority": "Низкий",
+  "basic": "Обычная",
+  "important": "Высокая",
+  "low": "Низкая",
   "finish_up_to": "Сделать до",
-  "delete": "Удалить"
+  "delete": "Удалить",
+  "cur_locale": "ru"
 }

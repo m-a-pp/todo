@@ -1,23 +1,28 @@
-
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:todo/src/localization.dart';
 
+import '../../main.dart';
+import '../models/todo_model.dart';
+import '../navigation/routes.dart';
+
 class ToDoList extends StatefulWidget {
-  ToDoList({Key? key}) : super(key: key);
+  const ToDoList({Key? key}) : super(key: key);
 
   @override
   State<ToDoList> createState() => _ToDoListState();
 }
 
 class _ToDoListState extends State<ToDoList> {
-  final items = List<String>.generate(5, (i) => 'Item ${i + 1}');
+  //final items = List<String>.generate(15, (i) => 'Item ${i + 1}');
 
   @override
   Widget build(BuildContext context) {
     AppLocalizations localizations = Localization.of(context);
     ThemeData theme = Theme.of(context);
+    DateFormat dateFormat = DateFormat.yMMMMd(localizations.localeName);
     return Padding(
-      padding: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
       child: Column(
         children: [
           Flexible(
@@ -29,31 +34,51 @@ class _ToDoListState extends State<ToDoList> {
                 },
                 child: ListView.builder(
                   shrinkWrap: true,
-                  itemCount: items.length + 1,
+                  itemCount: toDoLength() + 1,
+                  //items.length + 1,
                   itemBuilder: (BuildContext context, int index) {
-
                     Widget result;
-                    if (index == items.length) {
+                    if (index == toDoLength()) {
                       result = ListTile(
-                        leading: Icon(Icons.check_box_outline_blank, color: theme.cardColor,),
+                        leading: Icon(
+                          Icons.check_box_outline_blank,
+                          color: theme.cardColor,
+                        ),
                         title: TextField(
-
                           decoration: InputDecoration(
                             border: InputBorder.none,
                             hintText: localizations.new_task,
                             hintStyle: theme.textTheme.headline2,
                           ),
+                          onSubmitted: (value) {
+                            ToDo newToDo = ToDo(
+                              id: toDoLength().toString(),
+                              text: value,
+                              done: false,
+                              created: DateTime.now(),
+                              updated: DateTime.now(),
+                              importance: Importance.basic,
+                            );
+                            addToDo(newToDo);
+                            setState(() {
+                              ToDoList;
+                            });
+                          },
                         ),
                       );
                     } else {
-                      final item = items[index];
+                      final item = toDoI(index);
+                      //items[index];
                       result = Dismissible(
-                        key: Key(item),
+                        key: Key(item.id),
                         confirmDismiss: (direction) async {
                           setState(() {
                             if (direction == DismissDirection.startToEnd) {
+                              setState(() {
+                                toDoList[index].done = true;
+                              });
                             } else {
-                              items.removeAt(index);
+                              deleteToDo(toDoI(index));
                             }
                           });
                         },
@@ -88,13 +113,28 @@ class _ToDoListState extends State<ToDoList> {
                           ),
                         ),
                         child: ListTile(
-                          leading: Icon(Icons.check_box_outline_blank),
-                          title: Text(
-                            items[index],
-                            style: theme.textTheme.bodyText1,
-                          ),
+                          leading: const Icon(Icons.check_box_outline_blank),
+                          title: Text(item.text,
+                                  style: item.done ? theme.textTheme.headline4 :theme.textTheme.bodyText1,
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis),
+                          subtitle: item.deadline != null
+                              ? Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Text(
+                                    dateFormat
+                                        .format(item.deadline ?? DateTime.now()),
+                                  ),
+                              )
+                              : null,
                           trailing: IconButton(
-                              onPressed: () {}, icon: Icon(Icons.info_outline)),
+                              onPressed: () {
+                                final arguments = item.id;
+                                navigator.currentState?.pushReplacementNamed(
+                                    Routes.todo,
+                                    arguments: arguments);
+                              },
+                              icon: const Icon(Icons.info_outline)),
                         ),
                       );
                     }
