@@ -120,6 +120,7 @@ class _ToDoListState extends State<ToDoList> {
                                   overflow: TextOverflow.ellipsis),
                           subtitle: item.deadline != null
                               ? Padding(
+
                                 padding: const EdgeInsets.only(top: 4),
                                 child: Text(
                                     dateFormat
