@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todo/main.dart';
 import 'package:todo/src/components/todo_list.dart';
 import 'package:todo/src/models/todo_model.dart';
 import '../components/header.dart';
 import '../navigation/routes.dart';
+import '../db/database.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -13,17 +15,22 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<ToDo> toDoList = [];
+  late List<ToDo> toDoList;
+
+
 
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
+    toDoList = context.watch<ToDoListData>().getList;
+
     return Scaffold(
       backgroundColor: theme.primaryColor,
       body: SafeArea(
         child: NestedScrollView(
             floatHeaderSlivers: true,
-            headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            headerSliverBuilder:
+                (BuildContext context, bool innerBoxIsScrolled) {
               return <Widget>[
                 CustomHeader(),
               ];
@@ -33,14 +40,14 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           ToDo? arguments = ToDo(
-            id: toDoLength().toString(),
+            id: toDoList.length,
             text: '',
             importance: Importance.basic,
             done: false,
             created: DateTime.now(),
             updated: null,
           );
-          navigator.currentState?.pushReplacementNamed(Routes.todo, arguments: arguments);
+          navigator.currentState?.pushNamed(Routes.todo, arguments: arguments);
         },
         child: Theme(
           data: theme.copyWith(
@@ -50,6 +57,4 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
-
 }

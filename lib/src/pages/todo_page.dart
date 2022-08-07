@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:todo/main.dart';
+import 'package:todo/src/db/database.dart';
 import '../localization.dart';
 import '../models/todo_model.dart';
 import '../navigation/routes.dart';
@@ -58,20 +60,27 @@ class _ToDoPageState extends State<ToDoPage> {
           ),
           onPressed: () {
             if (newToDo) {
-              deleteToDo(toDo!);
+              //deleteToDo(toDo!);
             }
 
-            navigator.currentState!.pushReplacementNamed(Routes.home);
+            navigator.currentState!.pop();
           },
         ),
         backgroundColor: theme.primaryColor,
         actions: [
           TextButton(
               onPressed: () {
-                deleteToDo(toDo!);
-                toDo.updated = DateTime.now();
-                addToDo(toDo);
-                navigator.currentState!.pushReplacementNamed(Routes.home);
+                //deleteToDo(toDo!);
+                toDo!.updated = DateTime.now();
+                if (newToDo) {
+                  context.read<ToDoListData>().addToDo(toDo);
+                  //DBProvider.db.insertToDo(toDo);
+                  //deleteToDo(toDo!);
+                } else {
+                  context.read<ToDoListData>().updateToDo(toDo);
+                  //DBProvider.db.updateToDo(toDo);
+                }
+                navigator.currentState!.pop();
               },
               child: Text(localizations.save))
         ],
@@ -215,9 +224,9 @@ class _ToDoPageState extends State<ToDoPage> {
                     ),
                     onPressed: () {
                       if (!newToDo) {
-                        deleteToDo(toDo!);
-                        navigator.currentState!
-                            .pushReplacementNamed(Routes.home);
+                        context.read<ToDoListData>().deleteToDo(toDo!);
+                        //DBProvider.db.deleteToDo(toDo.id);
+                        navigator.currentState!.pop();
                       }
                     },
                   ),
@@ -238,9 +247,9 @@ class _ToDoPageState extends State<ToDoPage> {
                         )),
                     onPressed: () {
                       if (!newToDo) {
-                        deleteToDo(toDo!);
-                        navigator.currentState!
-                            .pushReplacementNamed(Routes.home);
+                        context.read<ToDoListData>().deleteToDo(toDo!);
+                        //DBProvider.db.deleteToDo(toDo.id);
+                        navigator.currentState!.pop();
                       }
                     },
                   ),
@@ -260,7 +269,7 @@ class _ToDoPageState extends State<ToDoPage> {
       date = toDo.deadline ?? date;
     }
 
-    _textController.text = toDo.text;
+    _textController.text = toDo.text!;
 
     return toDo;
   }

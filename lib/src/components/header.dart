@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todo/src/localization.dart';
 
 import '../models/todo_model.dart';
@@ -16,12 +17,13 @@ class CustomHeader extends StatelessWidget {
 
 class Delegate extends SliverPersistentHeaderDelegate {
   Delegate();
+
   int done = 0;
 
   @override
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
-    done = doneCounter();
+    done = context.watch<ToDoListData>().doneCounter();
     final progress = shrinkOffset / maxExtent;
     ThemeData theme = Theme.of(context);
     AppLocalizations localizations = Localization.of(context);
@@ -49,22 +51,26 @@ class Delegate extends SliverPersistentHeaderDelegate {
             ),
           ),
           AnimatedContainer(
-            duration: const Duration(milliseconds: 100),
-            padding: EdgeInsets.lerp(
-              const EdgeInsets.fromLTRB(0, 0, 20, 16),
-              const EdgeInsets.fromLTRB(0, 0, 20, 0),
-              progress,
-            ),
-            alignment: Alignment.lerp(
-              Alignment.bottomRight,
-              Alignment.centerRight,
-              progress,
-            ),
-            child: Icon(
-              Icons.visibility,
-              color: theme.secondaryHeaderColor,
-            ),
-          ),
+              duration: const Duration(milliseconds: 100),
+              padding: EdgeInsets.lerp(
+                const EdgeInsets.fromLTRB(0, 0, 25, 0),
+                const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                progress,
+              ),
+              alignment: Alignment.lerp(
+                Alignment.bottomRight,
+                Alignment.centerRight,
+                progress,
+              ),
+              child: IconButton(
+                onPressed: () {
+                  context.read<ToDoListData>().changeVisibility();
+                },
+                icon: Icon(
+                  Icons.visibility,
+                  color: theme.secondaryHeaderColor,
+                ),
+              )),
           Positioned(
             top: 90,
             left: 60,
