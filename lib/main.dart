@@ -4,6 +4,7 @@ import 'package:todo/src/app_theme.dart';
 
 import 'src/app_theme.dart';
 import 'src/localization.dart';
+import 'src/models/todo_model.dart';
 import 'src/pages/home_page.dart';
 import 'src/pages/todo_page.dart';
 import 'src/navigation/routes.dart';
@@ -36,7 +37,7 @@ class ToDoApp extends StatelessWidget {
           case (Routes.home):
             return MaterialPageRoute(builder: (context) => const HomePage());
           case (Routes.todo):
-            return MaterialPageRoute(builder: (context) => ToDoPage(id: settings.arguments as String));
+            return MaterialPageRoute(builder: (context) => ToDoPage(toDo: settings.arguments as ToDo));
         }
       },
       home: const HomePage(),

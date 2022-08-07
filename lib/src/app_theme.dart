@@ -16,6 +16,7 @@ class AppTheme {
         headline3: TextStyle(
             color: Color(0xFF000000),
             height: 32 / 38,
+
             fontWeight: FontWeight.w500,
             fontSize: 20),
         headline2: TextStyle(
@@ -36,7 +37,7 @@ class AppTheme {
         ),
         headline4: TextStyle(
             color: Color(0x4D000000),
-            height: 20 / 32,
+            height: 32 / 20,
             fontWeight: FontWeight.w400,
             fontSize: 16,
             decoration: TextDecoration.lineThrough,

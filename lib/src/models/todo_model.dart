@@ -24,7 +24,7 @@ ToDo toDoI(int i){
 }
 
 int toDoLength(){
-   return toDoList.length;
+  return toDoList.length;
 }
 
 void deleteToDo(ToDo toDo){
@@ -40,4 +40,12 @@ ToDo? findToDo(String id){
     if(toDo.id == id) return toDo;
   }
   return null;
+}
+
+int doneCounter(){
+  int done = 0;
+  for(var toDo in toDoList){
+    if(toDo.done) done++;
+  }
+  return done;
 }

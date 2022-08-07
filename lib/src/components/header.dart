@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:todo/src/localization.dart';
 
+import '../models/todo_model.dart';
+
 class CustomHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -14,10 +16,12 @@ class CustomHeader extends StatelessWidget {
 
 class Delegate extends SliverPersistentHeaderDelegate {
   Delegate();
+  int done = 0;
 
   @override
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
+    done = doneCounter();
     final progress = shrinkOffset / maxExtent;
     ThemeData theme = Theme.of(context);
     AppLocalizations localizations = Localization.of(context);
@@ -29,8 +33,8 @@ class Delegate extends SliverPersistentHeaderDelegate {
           AnimatedContainer(
             duration: const Duration(milliseconds: 100),
             padding: EdgeInsets.lerp(
-              EdgeInsets.fromLTRB(60, 50, 0, 0),
-              EdgeInsets.fromLTRB(16, 0, 0, 0),
+              const EdgeInsets.fromLTRB(60, 50, 0, 0),
+              const EdgeInsets.fromLTRB(16, 0, 0, 0),
               progress,
             ),
             alignment: Alignment.lerp(
@@ -47,8 +51,8 @@ class Delegate extends SliverPersistentHeaderDelegate {
           AnimatedContainer(
             duration: const Duration(milliseconds: 100),
             padding: EdgeInsets.lerp(
-              EdgeInsets.fromLTRB(0, 0, 20, 16),
-              EdgeInsets.fromLTRB(0, 0, 20, 0),
+              const EdgeInsets.fromLTRB(0, 0, 20, 16),
+              const EdgeInsets.fromLTRB(0, 0, 20, 0),
               progress,
             ),
             alignment: Alignment.lerp(
@@ -68,7 +72,7 @@ class Delegate extends SliverPersistentHeaderDelegate {
               duration: const Duration(milliseconds: 150),
               opacity: 1 - progress,
               child: Text(
-                localizations.done,
+                '${localizations.done} $done',
                 style: theme.textTheme.headline2,
               ),
             ),

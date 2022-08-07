@@ -6,9 +6,9 @@ import '../models/todo_model.dart';
 import '../navigation/routes.dart';
 
 class ToDoPage extends StatefulWidget {
-  final String? id;
+  final ToDo? toDo;
 
-  ToDoPage({Key? key, this.id}) : super(key: key);
+  const ToDoPage({Key? key, this.toDo}) : super(key: key);
 
   @override
   State<ToDoPage> createState() => _ToDoPageState();
@@ -36,11 +36,15 @@ class _ToDoPageState extends State<ToDoPage> {
 
   @override
   Widget build(BuildContext context) {
-    var toDoId = widget.id;
-    ToDo? toDo = argumentsCheck(findToDo(toDoId.toString()));
+    ToDo? toDo = widget.toDo;
+    toDo = argumentsCheck(toDo!);
     ThemeData theme = Theme.of(context);
     AppLocalizations localizations = Localization.of(context);
-    dropdownValue = localizations.basic;
+    dropdownValue = toDo.importance == Importance.basic
+        ? localizations.basic
+        : toDo.importance == Importance.important
+            ? localizations.important
+            : localizations.low;
     DateFormat dateFormat = DateFormat.yMMMMd(localizations.localeName);
 
     return Scaffold(
@@ -53,9 +57,10 @@ class _ToDoPageState extends State<ToDoPage> {
             color: theme.textTheme.headline1!.color,
           ),
           onPressed: () {
-            if(newToDo) {
-              deleteToDo(toDo);
+            if (newToDo) {
+              deleteToDo(toDo!);
             }
+
             navigator.currentState!.pushReplacementNamed(Routes.home);
           },
         ),
@@ -63,7 +68,7 @@ class _ToDoPageState extends State<ToDoPage> {
         actions: [
           TextButton(
               onPressed: () {
-                deleteToDo(toDo);
+                deleteToDo(toDo!);
                 toDo.updated = DateTime.now();
                 addToDo(toDo);
                 navigator.currentState!.pushReplacementNamed(Routes.home);
@@ -92,7 +97,7 @@ class _ToDoPageState extends State<ToDoPage> {
                       ),
                       onChanged: (value) {
                         newTask = value;
-                        toDo.text = value;
+                        toDo!.text = value;
                       },
                     ),
                   ),
@@ -110,13 +115,11 @@ class _ToDoPageState extends State<ToDoPage> {
                     SizedBox(
                       width: 150,
                       child: DropdownButtonFormField(
-                        hint: Text(localizations.basic),
-                        //value: dropdownValue,
                         decoration: const InputDecoration(
                           border: InputBorder.none,
                         ),
                         iconSize: 0.0,
-                        //style: theme.textTheme.headline2,
+                        //]]style: theme.textTheme.headline2,
                         items: [
                           localizations.basic,
                           localizations.important,
@@ -125,17 +128,28 @@ class _ToDoPageState extends State<ToDoPage> {
                           return DropdownMenuItem<String>(
                             value: value,
                             child: Text(
-                              value,
-                              style: theme.textTheme.bodyText1,
+                              '${value == localizations.important ? '!!' : ''}$value',
+                              style: value == localizations.important
+                                  ? theme.textTheme.bodyText1!
+                                      .copyWith(color: Colors.red)
+                                  : theme.textTheme.bodyText1,
                             ),
                           );
                         }).toList(),
                         onChanged: (String? newValue) {
                           dropdownValue = newValue;
+                          if (dropdownValue == localizations.basic) {
+                            toDo!.importance = Importance.basic;
+                          } else if (dropdownValue == localizations.important) {
+                            toDo!.importance = Importance.important;
+                          } else {
+                            toDo!.importance = Importance.low;
+                          }
                           setState(() {
                             dropdownValue;
                           });
                         },
+                        value: dropdownValue,
                       ),
                     ),
                     const Divider(),
@@ -170,7 +184,7 @@ class _ToDoPageState extends State<ToDoPage> {
                               setState(() {
                                 date = newDate;
                               });
-                              toDo.deadline = date;
+                              toDo!.deadline = date;
                             }
                           }
                         },
@@ -179,9 +193,9 @@ class _ToDoPageState extends State<ToDoPage> {
                   value: switchValue,
                   onChanged: (value) async {
                     setState(() {
-                      if(toDo.deadline == null){
+                      if (toDo!.deadline == null) {
                         toDo.deadline = date;
-                      }else {
+                      } else {
                         toDo.deadline = null;
                       }
                       switchValue = !switchValue;
@@ -199,14 +213,17 @@ class _ToDoPageState extends State<ToDoPage> {
                           ? theme.textTheme.headline2?.color
                           : theme.textTheme.bodyText2?.color,
                     ),
-                    onPressed: (){
+                    onPressed: () {
                       if (!newToDo) {
-                        deleteToDo(toDo);
-                        navigator.currentState!.pushReplacementNamed(Routes.home);
+                        deleteToDo(toDo!);
+                        navigator.currentState!
+                            .pushReplacementNamed(Routes.home);
                       }
                     },
                   ),
-                  const SizedBox(width: 16,),
+                  const SizedBox(
+                    width: 16,
+                  ),
                   TextButton(
                     style: TextButton.styleFrom(
                       padding: EdgeInsets.zero,
@@ -221,8 +238,9 @@ class _ToDoPageState extends State<ToDoPage> {
                         )),
                     onPressed: () {
                       if (!newToDo) {
-                        deleteToDo(toDo);
-                        navigator.currentState!.pushReplacementNamed(Routes.home);
+                        deleteToDo(toDo!);
+                        navigator.currentState!
+                            .pushReplacementNamed(Routes.home);
                       }
                     },
                   ),
@@ -234,27 +252,14 @@ class _ToDoPageState extends State<ToDoPage> {
   }
 
   ToDo argumentsCheck(ToDo? toDo) {
-    if (toDo == null) {
-      toDo = ToDo(
-        id: toDoList.length.toString(),
-        text: newTask,
-        done: false,
-        created:
-            DateTime.now(),
-        updated:
-            null,
-        importance: Importance.basic,
-      );
-      addToDo(toDo);
-    } else {
-      if(toDo.updated!=null) {
-        newToDo = false;
-      }
-      if (toDo.deadline != null) {
-        switchValue = true;
-        date = toDo.deadline ?? date;
-      }
+    if (toDo!.updated != null) {
+      newToDo = false;
     }
+    if (toDo.deadline != null) {
+      switchValue = true;
+      date = toDo.deadline ?? date;
+    }
+
     _textController.text = toDo.text;
 
     return toDo;

@@ -35,7 +35,6 @@ class _ToDoListState extends State<ToDoList> {
                 child: ListView.builder(
                   shrinkWrap: true,
                   itemCount: toDoLength() + 1,
-                  //items.length + 1,
                   itemBuilder: (BuildContext context, int index) {
                     Widget result;
                     if (index == toDoLength()) {
@@ -113,23 +112,55 @@ class _ToDoListState extends State<ToDoList> {
                           ),
                         ),
                         child: ListTile(
-                          leading: const Icon(Icons.check_box_outline_blank),
-                          title: Text(item.text,
-                                  style: item.done ? theme.textTheme.headline4 :theme.textTheme.bodyText1,
+                          leading: item.done
+                              ? Icon(
+                                  Icons.check_box,
+                                  color: theme.indicatorColor,
+                                )
+                              : item.importance == Importance.important
+                                  ? Icon(
+                                      Icons.check_box_outline_blank,
+                                      color: theme.textTheme.bodyText2!.color,
+                                    )
+                                  : const Icon(
+                                      Icons.check_box_outline_blank,
+                                    ),
+                          title: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              item.done == true
+                                  ? const Text('')
+                                  : item.importance == Importance.important
+                                      ? ImageIcon(
+                                          const AssetImage(
+                                              'assets/important.png'),
+                                          color:
+                                              theme.textTheme.bodyText2!.color,
+                                        )
+                                      : ImageIcon(
+                                          const AssetImage('assets/low.png'),
+                                          color:
+                                              theme.textTheme.headline2!.color),
+                              Text(item.text,
+                                  style: item.done
+                                      ? theme.textTheme.headline4
+                                      : theme.textTheme.bodyText1,
                                   maxLines: 3,
                                   overflow: TextOverflow.ellipsis),
+                            ],
+                          ),
                           subtitle: item.deadline != null
                               ? Padding(
-                                padding: const EdgeInsets.only(top: 4),
-                                child: Text(
-                                    dateFormat
-                                        .format(item.deadline ?? DateTime.now()),
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: Text(
+                                    dateFormat.format(
+                                        item.deadline ?? DateTime.now()),
                                   ),
-                              )
+                                )
                               : null,
                           trailing: IconButton(
                               onPressed: () {
-                                final arguments = item.id;
+                                final arguments = item;
                                 navigator.currentState?.pushReplacementNamed(
                                     Routes.todo,
                                     arguments: arguments);

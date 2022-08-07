@@ -13,6 +13,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<ToDo> toDoList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -27,11 +28,19 @@ class _HomePageState extends State<HomePage> {
                 CustomHeader(),
               ];
             },
-            body: ToDoList()),
+            body: const ToDoList()),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          navigator.currentState?.pushReplacementNamed(Routes.todo, arguments: toDoLength().toString());
+          ToDo? arguments = ToDo(
+            id: toDoLength().toString(),
+            text: '',
+            importance: Importance.basic,
+            done: false,
+            created: DateTime.now(),
+            updated: null,
+          );
+          navigator.currentState?.pushReplacementNamed(Routes.todo, arguments: arguments);
         },
         child: Theme(
           data: theme.copyWith(
