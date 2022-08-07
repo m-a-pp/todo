@@ -10,5 +10,5 @@ Done - приложение для планирования задач.
 
 
 
-- [Ссылка на apk для установки приложения](https://drive.google.com/drive/u/0/folders/18u6-6e9SX9yEdmjNSRCKxNAso34dNuKJ)
+- [Ссылка на apk для установки приложения](https://drive.google.com/drive/folders/18u6-6e9SX9yEdmjNSRCKxNAso34dNuKJ?usp=sharing)
 
