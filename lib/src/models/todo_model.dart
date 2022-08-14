@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import '../db/database.dart';
 enum Importance { basic, low, important }
 
 class ToDo {
@@ -13,12 +13,12 @@ class ToDo {
 
   ToDo(
       {required this.id,
-      required this.text,
-      required this.importance,
-      this.deadline,
-      required this.done,
-      required this.created,
-      required this.updated});
+        required this.text,
+        required this.importance,
+        this.deadline,
+        required this.done,
+        required this.created,
+        required this.updated});
 
   Map<String, dynamic> toMap() {
     final map = <String, dynamic>{};
@@ -36,10 +36,13 @@ class ToDo {
   ToDo.fromMap(Map<String, dynamic> map) {
     id = map['id'];
     text = map['text'];
-    deadline = DateTime.parse(map['deadline']);
+
+    deadline = map['deadline'] != 'null' ? DateTime.parse(map['deadline']) : null;
     importance = importanceFromString(map['importance']);
     done = map['done'] == 1 ? true : false;
+
     created = DateTime.parse(map['created']);
+
     updated = DateTime.parse(map['updated']);
   }
 
@@ -68,12 +71,24 @@ class ToDo {
 }
 
 class ToDoListData with ChangeNotifier {
-  final List<ToDo> _toDoList = [];
-
-  List<ToDo> get getList => _toDoList;
+  List<ToDo> _toDoList = [];
+  late Future<List<ToDo>> _futureToDoList;
   bool _visibility = true;
 
+  List<ToDo> get getList => _toDoList;
+  Future<List<ToDo>>? get getFutureList => _futureToDoList;
   bool get getVisibility => _visibility;
+
+  ToDoListData (){
+    fetchAndSetToDo();
+  }
+
+  Future<void> fetchAndSetToDo()  async{
+    _futureToDoList = DBProvider.db.getToDoList();
+    _toDoList = await _futureToDoList;
+    notifyListeners();
+  }
+
 
   void changeVisibility() {
     _visibility = !_visibility;
@@ -82,7 +97,6 @@ class ToDoListData with ChangeNotifier {
 
   void addToDo(ToDo newToDo) {
     _toDoList.add(newToDo);
-
     notifyListeners();
   }
 
@@ -106,11 +120,8 @@ class ToDoListData with ChangeNotifier {
     return done;
   }
 
-  void uploadToDoList(List<ToDo> list) {
-    for (var e in list) {
-      _toDoList.add(e);
-    }
-
+  void updateToDoList(List<ToDo> list) {
+    _toDoList = list;
     notifyListeners();
   }
 }

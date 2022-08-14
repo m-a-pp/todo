@@ -6,7 +6,6 @@ import 'package:todo/src/app_theme.dart';
 import 'src/models/todo_model.dart';
 import 'src/app_theme.dart';
 import 'src/localization.dart';
-import 'src/models/todo_model.dart';
 import 'src/pages/home_page.dart';
 import 'src/pages/todo_page.dart';
 import 'src/navigation/routes.dart';
@@ -17,11 +16,17 @@ void main() {
 
 final GlobalKey<NavigatorState> navigator = GlobalKey();
 
-class ToDoApp extends StatelessWidget {
+class ToDoApp extends StatefulWidget {
   const ToDoApp({Key? key}) : super(key: key);
 
   @override
+  State<ToDoApp> createState() => _ToDoAppState();
+}
+
+class _ToDoAppState extends State<ToDoApp> {
+  @override
   Widget build(BuildContext context) {
+
     var isDark = false;
     return ChangeNotifierProvider<ToDoListData>(
       create: (BuildContext context) => ToDoListData(),
@@ -34,7 +39,9 @@ class ToDoApp extends StatelessWidget {
           GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: Localization.supportedLocales,
-        theme: AppTheme.theme(isDark),
+        themeMode: ThemeMode.system,
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
         initialRoute: Routes.home,
         onGenerateRoute: (settings) {
           switch (settings.name) {

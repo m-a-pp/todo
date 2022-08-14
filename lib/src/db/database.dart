@@ -32,7 +32,7 @@ class DBProvider {
 
   Future<List<ToDo>> getToDoList() async {
     Database? db = await database;
-    final List<Map<String, dynamic>> toDoMapList = await db!.query('todo');
+    final List<Map<String, dynamic>> toDoMapList = await db!.query('todo', orderBy: 'id');
     final List<ToDo> toDoList = [];
     for (var toDoMap in toDoMapList) {
       toDoList.add(ToDo.fromMap(toDoMap));
@@ -44,6 +44,7 @@ class DBProvider {
   Future<ToDo> insertToDo(ToDo todo) async {
     Database? db = await database;
     todo.id = await db!.insert('todo', todo.toMap());
+
     return todo;
   }
 

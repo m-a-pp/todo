@@ -45,8 +45,8 @@ class _ToDoPageState extends State<ToDoPage> {
     dropdownValue = toDo.importance == Importance.basic
         ? localizations.basic
         : toDo.importance == Importance.important
-            ? localizations.important
-            : localizations.low;
+        ? localizations.important
+        : localizations.low;
     DateFormat dateFormat = DateFormat.yMMMMd(localizations.localeName);
 
     return Scaffold(
@@ -59,10 +59,6 @@ class _ToDoPageState extends State<ToDoPage> {
             color: theme.textTheme.headline1!.color,
           ),
           onPressed: () {
-            if (newToDo) {
-              //deleteToDo(toDo!);
-            }
-
             navigator.currentState!.pop();
           },
         ),
@@ -70,15 +66,13 @@ class _ToDoPageState extends State<ToDoPage> {
         actions: [
           TextButton(
               onPressed: () {
-                //deleteToDo(toDo!);
                 toDo!.updated = DateTime.now();
                 if (newToDo) {
                   context.read<ToDoListData>().addToDo(toDo);
-                  //DBProvider.db.insertToDo(toDo);
-                  //deleteToDo(toDo!);
+                  DBProvider.db.insertToDo(toDo);
                 } else {
                   context.read<ToDoListData>().updateToDo(toDo);
-                  //DBProvider.db.updateToDo(toDo);
+                  DBProvider.db.updateToDo(toDo);
                 }
                 navigator.currentState!.pop();
               },
@@ -128,7 +122,6 @@ class _ToDoPageState extends State<ToDoPage> {
                           border: InputBorder.none,
                         ),
                         iconSize: 0.0,
-                        //]]style: theme.textTheme.headline2,
                         items: [
                           localizations.basic,
                           localizations.important,
@@ -140,7 +133,7 @@ class _ToDoPageState extends State<ToDoPage> {
                               '${value == localizations.important ? '!!' : ''}$value',
                               style: value == localizations.important
                                   ? theme.textTheme.bodyText1!
-                                      .copyWith(color: Colors.red)
+                                  .copyWith(color: Colors.red)
                                   : theme.textTheme.bodyText1,
                             ),
                           );
@@ -161,7 +154,9 @@ class _ToDoPageState extends State<ToDoPage> {
                         value: dropdownValue,
                       ),
                     ),
-                    const Divider(),
+                    Divider(
+                      color: theme.dividerColor,
+                    ),
                   ],
                 ),
               ),
@@ -173,32 +168,33 @@ class _ToDoPageState extends State<ToDoPage> {
                 subtitle: !switchValue
                     ? null
                     : TextButton(
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                        ),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            dateFormat.format(date),
-                          ),
-                        ),
-                        onPressed: () async {
-                          if (switchValue == true) {
-                            DateTime? newDate = await showDatePicker(
-                                context: context,
-                                initialDate: DateTime.now(),
-                                firstDate: DateTime(2000),
-                                lastDate: DateTime(2100));
-                            if (newDate != null) {
-                              setState(() {
-                                date = newDate;
-                              });
-                              toDo!.deadline = date;
-                            }
-                          }
-                        },
-                      ),
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                  ),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      dateFormat.format(date),
+                    ),
+                  ),
+                  onPressed: () async {
+                    if (switchValue == true) {
+                      DateTime? newDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2100));
+                      if (newDate != null) {
+                        setState(() {
+                          date = newDate;
+                        });
+                        toDo!.deadline = date;
+                      }
+                    }
+                  },
+                ),
                 trailing: Switch(
+                  activeColor: theme.secondaryHeaderColor,
                   value: switchValue,
                   onChanged: (value) async {
                     setState(() {
@@ -212,7 +208,9 @@ class _ToDoPageState extends State<ToDoPage> {
                   },
                 ),
               ),
-              const Divider(),
+              Divider(
+                color: theme.dividerColor,
+              ),
               Row(
                 children: [
                   IconButton(
@@ -225,7 +223,7 @@ class _ToDoPageState extends State<ToDoPage> {
                     onPressed: () {
                       if (!newToDo) {
                         context.read<ToDoListData>().deleteToDo(toDo!);
-                        //DBProvider.db.deleteToDo(toDo.id);
+                        DBProvider.db.deleteToDo(toDo.id);
                         navigator.currentState!.pop();
                       }
                     },
@@ -248,7 +246,7 @@ class _ToDoPageState extends State<ToDoPage> {
                     onPressed: () {
                       if (!newToDo) {
                         context.read<ToDoListData>().deleteToDo(toDo!);
-                        //DBProvider.db.deleteToDo(toDo.id);
+                        DBProvider.db.deleteToDo(toDo.id);
                         navigator.currentState!.pop();
                       }
                     },

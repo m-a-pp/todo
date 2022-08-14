@@ -5,7 +5,6 @@ import 'package:todo/src/components/todo_list.dart';
 import 'package:todo/src/models/todo_model.dart';
 import '../components/header.dart';
 import '../navigation/routes.dart';
-import '../db/database.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -17,10 +16,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late List<ToDo> toDoList;
 
-
-
   @override
   Widget build(BuildContext context) {
+    ToDoListData();
     ThemeData theme = Theme.of(context);
     toDoList = context.watch<ToDoListData>().getList;
 
@@ -28,14 +26,38 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: theme.primaryColor,
       body: SafeArea(
         child: NestedScrollView(
-            floatHeaderSlivers: true,
-            headerSliverBuilder:
-                (BuildContext context, bool innerBoxIsScrolled) {
-              return <Widget>[
-                CustomHeader(),
-              ];
-            },
-            body: const ToDoList()),
+          floatHeaderSlivers: true,
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              // const CustomHeader(),
+              SliverOverlapAbsorber(
+                handle:
+                    NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                sliver: const CustomHeader(),
+              ),
+            ];
+          },
+          body: Builder(builder: (context) {
+            return NotificationListener<OverscrollIndicatorNotification>(
+              onNotification: (OverscrollIndicatorNotification overscroll) {
+                overscroll.disallowIndicator();
+                return false;
+              },
+              child: CustomScrollView(
+                slivers: <Widget>[
+                  SliverOverlapInjector(
+                    handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                        context),
+                  ),
+                  SliverList(
+                      delegate: SliverChildListDelegate([
+                    const ToDoList(),
+                  ]))
+                ],
+              ),
+            );
+          }),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
