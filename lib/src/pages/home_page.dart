@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo/main.dart';
 import 'package:todo/src/components/todo_list.dart';
 import 'package:todo/src/models/todo_model.dart';
 import '../components/header.dart';
-import '../navigation/routes.dart';
+import '../navigation/app_navigation.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -29,7 +28,6 @@ class _HomePageState extends State<HomePage> {
           floatHeaderSlivers: true,
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
-              // const CustomHeader(),
               SliverOverlapAbsorber(
                 handle:
                     NestedScrollView.sliverOverlapAbsorberHandleFor(context),
@@ -61,15 +59,7 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          ToDo? arguments = ToDo(
-            id: toDoList.length,
-            text: '',
-            importance: Importance.basic,
-            done: false,
-            created: DateTime.now(),
-            updated: null,
-          );
-          navigator.currentState?.pushNamed(Routes.todo, arguments: arguments);
+          insertToDo();
         },
         child: Theme(
           data: theme.copyWith(
@@ -78,5 +68,11 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  void insertToDo(){
+    ToDo newToDo = ToDo.common();
+    context.read<ToDoListData>().insertToDo(newToDo);
+    context.read<ToDoRouterDelegate>().gotoToDoPage(newToDo.id!);
   }
 }

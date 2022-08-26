@@ -102,6 +102,4 @@ class AppTheme {
     ),
     iconTheme: const IconThemeData(size: 24),
   );
-
-
 }

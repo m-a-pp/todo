@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import '../components/todo_list_item.dart';
 import '../db/database.dart';
+
 enum Importance { basic, low, important }
 
 class ToDo {
@@ -20,6 +22,15 @@ class ToDo {
         required this.created,
         required this.updated});
 
+  ToDo.common(){
+    id = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    text = '';
+    importance = Importance.basic;
+    done = false;
+    created = DateTime.now();
+    updated = null;
+  }
+
   Map<String, dynamic> toMap() {
     final map = <String, dynamic>{};
     map['id'] = id;
@@ -37,7 +48,8 @@ class ToDo {
     id = map['id'];
     text = map['text'];
 
-    deadline = map['deadline'] != 'null' ? DateTime.parse(map['deadline']) : null;
+    deadline =
+    map['deadline'] != 'null' ? DateTime.parse(map['deadline']) : null;
     importance = importanceFromString(map['importance']);
     done = map['done'] == 1 ? true : false;
 
@@ -63,7 +75,7 @@ class ToDo {
       case Importance.basic:
         return 'basic';
       case Importance.low:
-        return 'low' ;
+        return 'low';
       case Importance.important:
         return 'important';
     }
@@ -76,39 +88,43 @@ class ToDoListData with ChangeNotifier {
   bool _visibility = true;
 
   List<ToDo> get getList => _toDoList;
+
   Future<List<ToDo>>? get getFutureList => _futureToDoList;
+
   bool get getVisibility => _visibility;
 
-  ToDoListData (){
+  int get getListLength => _toDoList.length;
+
+  ToDoListData() {
     fetchAndSetToDo();
   }
 
-  Future<void> fetchAndSetToDo()  async{
+  Future<void> fetchAndSetToDo() async {
     _futureToDoList = DBProvider.db.getToDoList();
     _toDoList = await _futureToDoList;
     notifyListeners();
   }
 
+  void removeToDo(ToDo toDo) {
+    _toDoList.remove(toDo);
+    DBProvider.db.deleteToDo((toDo.id));
+    notifyListeners();
+  }
+
+  void insertToDo(ToDo toDo) {
+    _toDoList.add(toDo);
+    DBProvider.db.insertToDo(toDo);
+    notifyListeners();
+  }
 
   void changeVisibility() {
     _visibility = !_visibility;
     notifyListeners();
   }
 
-  void addToDo(ToDo newToDo) {
-    _toDoList.add(newToDo);
-    notifyListeners();
-  }
-
-  void deleteToDo(ToDo toDo) {
-    _toDoList.remove(toDo);
-
-    notifyListeners();
-  }
-
   void updateToDo(ToDo toDo) {
     _toDoList[_toDoList.indexOf(toDo)] = toDo;
-
+    DBProvider.db.updateToDo(toDo);
     notifyListeners();
   }
 
@@ -120,8 +136,10 @@ class ToDoListData with ChangeNotifier {
     return done;
   }
 
-  void updateToDoList(List<ToDo> list) {
-    _toDoList = list;
-    notifyListeners();
+  ToDo? findToDo(int id) {
+    for (ToDo val in _toDoList) {
+      if (id == val.id) return val;
+    }
+    return null;
   }
 }

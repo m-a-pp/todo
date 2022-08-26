@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:todo/main.dart';
+
 import 'package:todo/src/db/database.dart';
 import '../localization.dart';
 import '../models/todo_model.dart';
-import '../navigation/routes.dart';
+import '../navigation/app_navigation.dart';
 
 class ToDoPage extends StatefulWidget {
-  final ToDo? toDo;
+  final int? id;
 
-  const ToDoPage({Key? key, this.toDo}) : super(key: key);
+  const ToDoPage({Key? key, this.id}) : super(key: key);
 
   @override
   State<ToDoPage> createState() => _ToDoPageState();
@@ -22,31 +22,33 @@ class _ToDoPageState extends State<ToDoPage> {
   DateTime date = DateTime.now();
   bool newToDo = true;
   String newTask = '';
-  late TextEditingController _textController;
+  late ToDo toDoCopy;
+  bool built = false;
+  final TextEditingController _textController = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    _textController = TextEditingController();
+  void removeToDo(ToDo toDo) {
+    context.read<ToDoListData>().removeToDo(toDo);
+    context.read<ToDoRouterDelegate>().gotoHome();
   }
 
-  @override
-  void dispose() {
-    _textController.dispose();
-    super.dispose();
+  void updateToDo(ToDo toDo) {
+    context.read<ToDoListData>().updateToDo(toDo);
+    context.read<ToDoRouterDelegate>().gotoHome();
   }
 
   @override
   Widget build(BuildContext context) {
-    ToDo? toDo = widget.toDo;
-    toDo = argumentsCheck(toDo!);
+    int? id = widget.id;
+    ToDo? toDo = context.read<ToDoListData>().findToDo(id!);
+    toDo = argumentsCheck(toDo);
+    built = true;
     ThemeData theme = Theme.of(context);
     AppLocalizations localizations = Localization.of(context);
     dropdownValue = toDo.importance == Importance.basic
         ? localizations.basic
         : toDo.importance == Importance.important
-        ? localizations.important
-        : localizations.low;
+            ? localizations.important
+            : localizations.low;
     DateFormat dateFormat = DateFormat.yMMMMd(localizations.localeName);
 
     return Scaffold(
@@ -59,7 +61,14 @@ class _ToDoPageState extends State<ToDoPage> {
             color: theme.textTheme.headline1!.color,
           ),
           onPressed: () {
-            navigator.currentState!.pop();
+            if (newToDo) {
+              removeToDo(toDo!);
+            } else {
+              toDo!.text = toDoCopy.text;
+              toDo.deadline = toDoCopy.deadline;
+              toDo.importance = toDoCopy.importance;
+              updateToDo(toDo);
+            }
           },
         ),
         backgroundColor: theme.primaryColor,
@@ -67,14 +76,7 @@ class _ToDoPageState extends State<ToDoPage> {
           TextButton(
               onPressed: () {
                 toDo!.updated = DateTime.now();
-                if (newToDo) {
-                  context.read<ToDoListData>().addToDo(toDo);
-                  DBProvider.db.insertToDo(toDo);
-                } else {
-                  context.read<ToDoListData>().updateToDo(toDo);
-                  DBProvider.db.updateToDo(toDo);
-                }
-                navigator.currentState!.pop();
+                updateToDo(toDo);
               },
               child: Text(localizations.save))
         ],
@@ -133,7 +135,7 @@ class _ToDoPageState extends State<ToDoPage> {
                               '${value == localizations.important ? '!!' : ''}$value',
                               style: value == localizations.important
                                   ? theme.textTheme.bodyText1!
-                                  .copyWith(color: Colors.red)
+                                      .copyWith(color: Colors.red)
                                   : theme.textTheme.bodyText1,
                             ),
                           );
@@ -168,31 +170,31 @@ class _ToDoPageState extends State<ToDoPage> {
                 subtitle: !switchValue
                     ? null
                     : TextButton(
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                  ),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      dateFormat.format(date),
-                    ),
-                  ),
-                  onPressed: () async {
-                    if (switchValue == true) {
-                      DateTime? newDate = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime(2100));
-                      if (newDate != null) {
-                        setState(() {
-                          date = newDate;
-                        });
-                        toDo!.deadline = date;
-                      }
-                    }
-                  },
-                ),
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                        ),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            dateFormat.format(date),
+                          ),
+                        ),
+                        onPressed: () async {
+                          if (switchValue == true) {
+                            DateTime? newDate = await showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime(2000),
+                                lastDate: DateTime(2100));
+                            if (newDate != null) {
+                              setState(() {
+                                date = newDate;
+                              });
+                              toDo!.deadline = date;
+                            }
+                          }
+                        },
+                      ),
                 trailing: Switch(
                   activeColor: theme.secondaryHeaderColor,
                   value: switchValue,
@@ -222,9 +224,7 @@ class _ToDoPageState extends State<ToDoPage> {
                     ),
                     onPressed: () {
                       if (!newToDo) {
-                        context.read<ToDoListData>().deleteToDo(toDo!);
-                        DBProvider.db.deleteToDo(toDo.id);
-                        navigator.currentState!.pop();
+                        removeToDo(toDo!);
                       }
                     },
                   ),
@@ -245,9 +245,7 @@ class _ToDoPageState extends State<ToDoPage> {
                         )),
                     onPressed: () {
                       if (!newToDo) {
-                        context.read<ToDoListData>().deleteToDo(toDo!);
-                        DBProvider.db.deleteToDo(toDo.id);
-                        navigator.currentState!.pop();
+                        removeToDo(toDo!);
                       }
                     },
                   ),
@@ -259,9 +257,22 @@ class _ToDoPageState extends State<ToDoPage> {
   }
 
   ToDo argumentsCheck(ToDo? toDo) {
+    if (!built) {
+      toDoCopy = ToDo(
+        id: toDo!.id,
+        text: toDo.text,
+        importance: toDo.importance,
+        done: toDo.done,
+        created: toDo.created,
+        updated: toDo.updated,
+        deadline: toDo.deadline,
+      );
+    }
+
     if (toDo!.updated != null) {
       newToDo = false;
     }
+
     if (toDo.deadline != null) {
       switchValue = true;
       date = toDo.deadline ?? date;
