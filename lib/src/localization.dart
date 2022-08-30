@@ -15,9 +15,6 @@ class Localization {
 
   static AppLocalizations of(BuildContext context) =>
       AppLocalizations.of(context)!;
-
-
-
-
+  
   const Localization._();
 }
