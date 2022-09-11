@@ -14,7 +14,7 @@ Done - приложение для планирования задач.
 8) текст длинных заметок обрезается по макету
 9) анимации для добавления/удаления заметок
 
-- [Ссылка на apk для установки приложения](https://drive.google.com/drive/folders/18u6-6e9SX9yEdmjNSRCKxNAso34dNuKJ?usp=sharing)
+- [Ссылка на apk для установки приложения](https://www.dropbox.com/sh/7we0v6w68s2tozg/AAAfe4bj76orYaxDACYuFzf8a?dl=0)
 
 ![Screenshot_2022-08-28-20-09-37-368_com example todo](https://user-images.githubusercontent.com/107504868/187092217-a51c638b-ce9f-4a25-9a52-9ddca2b10a0f.jpg)
 ![Screenshot_2022-08-28-20-09-41-715_com example todo](https://user-images.githubusercontent.com/107504868/187092218-2a6ce53a-9990-43ab-9772-94af41f251b4.jpg)
